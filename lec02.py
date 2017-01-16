@@ -33,7 +33,5 @@ for step in range(2001):
     if(step % 20) == 0:
         print(step, sess.run(W), sess.run(b))
 
-print(sess.run(hypothesis, feed_dict={X:5}))
-print(sess.run(hypothesis, feed_dict={X:3.3}))
 
 
