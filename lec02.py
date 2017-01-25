@@ -12,7 +12,7 @@ Y = tf.placeholder(tf.float32)
 # hypothesis
 hypothesis = W * X + b
 
-cost = tf.reduce_mean(tf.square(hypothesis - y_data))
+cost = tf.reduce_mean(tf.square(hypothesis - Y))
 
 #minimize
 a = tf.Variable(0.1) # alpha, learning rate
