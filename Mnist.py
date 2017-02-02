@@ -67,7 +67,8 @@ else:
 
 # Define cost and optimizer
 cost = tf.reduce_mean(-tf.reduce_sum(y*tf.log(hypothesis), reduction_indices=1))
-optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+#optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 #initializing variables
 init = tf.global_variables_initializer()

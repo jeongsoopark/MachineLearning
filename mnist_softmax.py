@@ -41,13 +41,13 @@ def main(_):
   b = tf.Variable(tf.zeros([10]))
   more_layer = 0
   if(more_layer):
-      W1 = tf.Variable(tf.zeros([784, 256]))
-      W2 = tf.Variable(tf.zeros([256, 256]))
-      W3 = tf.Variable(tf.zeros([256, 10]))
+      W1 = tf.Variable(tf.random_normal([784, 256]))
+      W2 = tf.Variable(tf.random_normal([256, 256]))
+      W3 = tf.Variable(tf.random_normal([256, 10]))
 
-      B1 = tf.Variable(tf.zeros([256]))
-      B2 = tf.Variable(tf.zeros([256]))
-      B3 = tf.Variable(tf.zeros([10]))
+      B1 = tf.Variable(tf.random_normal([256]))
+      B2 = tf.Variable(tf.random_normal([256]))
+      B3 = tf.Variable(tf.random_normal([10]))
 
       Y1 = tf.nn.relu(tf.matmul(x, W1) + B1)
       Y2 = tf.nn.relu(tf.matmul(Y1, W2) + B2)
@@ -71,7 +71,7 @@ def main(_):
   cross_entropy = tf.reduce_mean(
       tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
   #train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
-  train_step = tf.train.AdamOptimizer(learning_rate=0.01).minimize(cross_entropy)
+  train_step = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cross_entropy)
 
   sess = tf.InteractiveSession()
   tf.global_variables_initializer().run()
