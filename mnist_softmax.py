@@ -48,11 +48,7 @@ def main(_):
       B1 = tf.Variable(tf.zeros([256]))
       B2 = tf.Variable(tf.zeros([256]))
       B3 = tf.Variable(tf.zeros([10]))
-      '''
-      Y1 = tf.matmul(x, W1) + B1
-      Y2 = tf.matmul(Y1, W2) + B2
-      Y3 = tf.matmul(Y2, W3) + B3
-      '''
+
       Y1 = tf.nn.relu(tf.matmul(x, W1) + B1)
       Y2 = tf.nn.relu(tf.matmul(Y1, W2) + B2)
       Y3 = tf.matmul(Y2, W3) + B3
