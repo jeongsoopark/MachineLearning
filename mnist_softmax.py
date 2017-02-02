@@ -39,24 +39,26 @@ def main(_):
   x = tf.placeholder(tf.float32, [None, 784])
   W = tf.Variable(tf.zeros([784, 10]))
   b = tf.Variable(tf.zeros([10]))
+  more_layer = 1
+  if(more_layer):
+      W1 = tf.Variable(tf.zeros([784, 256]))
+      W2 = tf.Variable(tf.zeros([256, 256]))
+      W3 = tf.Variable(tf.zeros([256, 10]))
 
-  W1 = tf.Variable(tf.zeros([784, 256]))
-  W2 = tf.Variable(tf.zeros([256, 256]))
-  W3 = tf.Variable(tf.zeros([256, 10]))
-
-  B1 = tf.Variable(tf.zeros([256]))
-  B2 = tf.Variable(tf.zeros([256]))
-  B3 = tf.Variable(tf.zeros([10]))
-  '''
-  Y1 = tf.matmul(x, W1) + B1
-  Y2 = tf.matmul(Y1, W2) + B2
-  Y3 = tf.matmul(Y2, W3) + B3
-  '''
-  Y1 = tf.nn.relu(tf.matmul(x, W1) + B1)
-  Y2 = tf.nn.relu(tf.matmul(Y1, W2) + B2)
-  Y3 = tf.matmul(Y2, W3) + B3
-  y = Y3
-  #y = tf.matmul(x, W) + b
+      B1 = tf.Variable(tf.zeros([256]))
+      B2 = tf.Variable(tf.zeros([256]))
+      B3 = tf.Variable(tf.zeros([10]))
+      '''
+      Y1 = tf.matmul(x, W1) + B1
+      Y2 = tf.matmul(Y1, W2) + B2
+      Y3 = tf.matmul(Y2, W3) + B3
+      '''
+      Y1 = tf.nn.relu(tf.matmul(x, W1) + B1)
+      Y2 = tf.nn.relu(tf.matmul(Y1, W2) + B2)
+      Y3 = tf.matmul(Y2, W3) + B3
+      y = Y3
+  else:
+      y = tf.matmul(x, W) + b
 
   # Define loss and optimizer
   y_ = tf.placeholder(tf.float32, [None, 10])
