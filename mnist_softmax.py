@@ -39,7 +39,7 @@ def main(_):
   x = tf.placeholder(tf.float32, [None, 784])
   W = tf.Variable(tf.zeros([784, 10]))
   b = tf.Variable(tf.zeros([10]))
-  more_layer = 1
+  more_layer = 0
   if(more_layer):
       W1 = tf.Variable(tf.zeros([784, 256]))
       W2 = tf.Variable(tf.zeros([256, 256]))
@@ -70,7 +70,8 @@ def main(_):
   # outputs of 'y', and then average across the batch.
   cross_entropy = tf.reduce_mean(
       tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
-  train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+  #train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+  train_step = tf.train.AdamOptimizer(learning_rate=0.01).minimize(cross_entropy)
 
   sess = tf.InteractiveSession()
   tf.global_variables_initializer().run()
@@ -84,9 +85,9 @@ def main(_):
     batch_xs, batch_ys = mnist.train.next_batch(100)
     sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
     if(step % 20) == 0:
-      #print(sess.run(cross_entropy, feed_dict={x: batch_xs, y_: batch_ys}))
-      print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
-      #print(sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+      print("Cross entropy: ", sess.run(cross_entropy, feed_dict={x: batch_xs, y_: batch_ys}))
+      #print(sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys}))
+      print("Accuracy: ", sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
