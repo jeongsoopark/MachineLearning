@@ -34,19 +34,10 @@ import tensorflow as tf
 
 FLAGS = None
 
-
 def main(_):
   # Import data
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
 
-  # Open camera interface for input
-  cv2.namedWindow("hackaday_AP")
-  vc = cv2.VideoCapture(0)
-
-  if vc.isOpened():
-      ret, frame = vc.read()
-  else:
-      ret = False
 
   # Create the model
   x = tf.placeholder(tf.float32, [None, 784])
@@ -67,8 +58,7 @@ def main(_):
   #
   # So here we use tf.nn.softmax_cross_entropy_with_logits on the raw
   # outputs of 'y', and then average across the batch.
-  cross_entropy = tf.reduce_mean(
-      tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
+  cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
   #train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
   train_step = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cross_entropy)
 
@@ -78,6 +68,7 @@ def main(_):
   # Test trained model
   correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
   accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+  prediction = tf.argmax(y, 1)
 
   # Train
   for step in range(1000):
@@ -87,27 +78,38 @@ def main(_):
       print("Cross entropy: ", sess.run(cross_entropy, feed_dict={x: batch_xs, y_: batch_ys}))
       print("Accuracy: ", sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
 
-
-  prediction = tf.argmax(y, 1)
-
-  # camera input
-  camWidth, camHeight, camChannels = frame.shape
-  while ret:
-      gray_image =  cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-      ret, binary_image = cv2.threshold(gray_image, 96, 255, cv2.THRESH_BINARY_INV)
-      resized_image = cv2.resize(binary_image, (28, 28), interpolation=cv2.INTER_LINEAR)
-
-      im2 = tf.image.convert_image_dtype(resized_image, tf.float32)
-      unrolled = tf.reshape(im2, [-1, 784])
-      cv2.imshow("greyscale", binary_image)
-      cv2.imshow("resized", resized_image)
-
-      print("Inference: ", (sess.run(prediction, feed_dict={x: unrolled.eval()})))
-
+  # Open camera interface for input
+  cv2.namedWindow("hackaday_AP")
+  vc = cv2.VideoCapture(0)
+  if vc.isOpened():
       ret, frame = vc.read()
-      key = cv2.waitKey(20)
-      if key == 27:  # exit on ESC
-          break
+  else:
+      ret = False
+
+  # while webcam is opened, captured frame is processed and input to prediction network
+  while ret:
+    #opencv image processing
+    gray_image =  cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    ret, binary_image = cv2.threshold(gray_image, 96, 255, cv2.THRESH_BINARY_INV)
+    resized_image = cv2.resize(binary_image, (28, 28), interpolation=cv2.INTER_LINEAR)
+
+    #tensorflow resize and reshape to [1, 784] tensor
+    im2 = tf.image.convert_image_dtype(resized_image, tf.float32)
+    unrolled = tf.reshape(im2, [-1, 784])
+
+    #opencv API to see image
+    cv2.imshow("greyscale", binary_image)
+    cv2.imshow("resized", resized_image)
+
+    print("Inference: ", (sess.run(prediction, feed_dict={x: unrolled.eval()})))
+
+    #wait for user input
+    key = cv2.waitKey(20)
+    if key == 27:  # exit on ESC
+      break
+
+    #capture next frame
+    ret, frame = vc.read()
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
