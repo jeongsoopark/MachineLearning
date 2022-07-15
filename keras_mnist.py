@@ -11,6 +11,8 @@ from keras.layers.convolutional import Conv2D, MaxPooling2D
 import numpy as np
 np.random.seed(7)
 
+import matplotlib.pyplot  as plt
+
 print('Python version : ', sys.version)
 print('TensorFlow version : ', tf.__version__)
 print('Keras version : ', keras.__version__)
@@ -34,7 +36,7 @@ print(x_test.shape[0], 'test samples')
 
 batch_size = 128
 num_classes = 10
-epochs = 12
+epochs = 1
 
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
@@ -63,3 +65,41 @@ hist = model.fit(x_train, y_train,
 score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
+'''
+n = 0
+plt.imshow(x_test[n].reshape(28, 28), cmap='Greys', interpolation='nearest')
+plt.show()
+predicted = model.predict(x_test[n].reshape((1, 28, 28, 1)))
+print(predicted)
+print('The Answer is ', predicted.argmax(axis=-1))
+'''
+
+import random
+
+predicted_result = model.predict(x_test)
+predicted_labels = np.argmax(predicted_result, axis=1)
+
+test_labels = np.argmax(y_test, axis=1)
+
+wrong_result = []
+
+for n in range(0, len(test_labels)):
+    if predicted_labels[n] != test_labels[n]:
+        wrong_result.append(n)
+
+samples = random.choices(population=wrong_result, k=16)
+
+count = 0
+nrows = ncols = 4
+
+plt.figure(figsize=(12,8))
+
+for n in samples:
+    count += 1
+    plt.subplot(nrows, ncols, count)
+    plt.imshow(x_test[n].reshape(28, 28), cmap='Greys', interpolation='nearest')
+    tmp = "Label:" + str(test_labels[n]) + ", Prediction:" + str(predicted_labels[n])
+    plt.title(tmp)
+
+plt.tight_layout()
+plt.show()
