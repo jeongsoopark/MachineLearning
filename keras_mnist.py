@@ -38,7 +38,7 @@ def process(img_input):
 
     gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
 
-    ret, binary = cv2.threshold(gray, 100, 235, cv2.THRESH_BINARY_INV)
+    ret, binary = cv2.threshold(gray, 2 00, 235, cv2.THRESH_BINARY_INV)
     binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2,2)), iterations = 2)
     contours , hierarchy = cv2.findContours(binary , cv2.RETR_EXTERNAL , cv2.CHAIN_APPROX_SIMPLE)
     
@@ -135,6 +135,8 @@ cap = cv2.VideoCapture(0)
 
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+rectmin = (250, 150)
+rectmax = (width-rectmin[0], height-rectmin[1])
 
 while(True):
 
@@ -148,14 +150,16 @@ while(True):
     img_input = img_color.copy()
 
     if camera == True:
-        cv2.rectangle(img_color, (250, 150),  (width-250, height-150), (0, 0, 255), 3)
+        cv2.rectangle(img_color, rectmin, rectmax, (0, 0, 255), 3)
     cv2.imshow('bgr', img_color)
 
     key=cv2.waitKey(1)
     if key == 27: # esc key
         break
     elif key == 32: #space key
-        img = process(img_input)
+        img_crop = img_input[rectmin[1]:rectmax[1], rectmin[0]:rectmax[0]]
+        cv2.imshow('frame', img_crop)
+        img = process(img_crop)
         print(img)
         cv2.imshow('frame', img)
 
